@@ -18,7 +18,7 @@ _start:
     mov eax, 192    ; sys call number for mmap
     int 80h
     ; check if mmap returned a valid pointer
-
+    
     cmp eax, -1     ; on failure mmap returns -1
     je exit_with_error
 
@@ -48,15 +48,16 @@ child_process:
     call print
 
     ; free the allocated stack using munmap
-    push dword ecx               ; Push the mmap'ed address (child stack)
-    mov eax, 91                  ; Syscall number for munmap
-    mov edx, 4096                ; Length of memory region to unmap
-    int 0x80                     ; Perform the syscall
+    mov eax, 91
+    mov ebx, [esp+4]
+    mov ecx, 4096
+    int 0x80
+    ; check for negative status code
+    cmp eax, 0
+    jl exit_with_error
 
     ; exit the child process
-    mov eax, 1                   ; Syscall number for sys_exit
-    xor ebx, ebx                 ; Exit code 0
-    int 0x80                     ; Exit syscall
+    jmp exit
 
 parent_process:
     ; print and exit
