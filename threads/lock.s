@@ -3,7 +3,7 @@ section .data
     counter_msg_len equ $-counter_msg
     newline db 0xa,0x00
     newline_len equ $-newline
-    max_threads db 8
+    max_threads db 16
     counter db 0
     mutex dd 0
 
@@ -29,7 +29,6 @@ init_threads:
     call child_process
 
 spawn_thread:
-    ; call print
     call allocate_stack
     ; store mmap address as the child stack pointer
     mov ecx, eax      ; ecx holds the mmap'd memory address (child stack)
@@ -97,7 +96,7 @@ spin:
     ret             ; eax was zero, so lock was prevously free
 
 release_lock:
-    mov dword [mutex], 0
+    mov byte [mutex], 0
     ret
 
 print:
@@ -107,8 +106,8 @@ print:
     ret
 
 print_counter_val:
-    mov ecx, counter_msg
-    mov edx, counter_msg_len
+    ; mov ecx, counter_msg
+    ; mov edx, counter_msg_len
     call print
     ; translate decimal val to ascii representation, just add 0x30
     add byte [counter], 0x00000030
@@ -117,9 +116,9 @@ print_counter_val:
     call print
     ; revert translation
     sub byte [counter], 0x30
-    mov ecx, newline
-    mov edx, newline_len
-    call print
+    ; mov ecx, newline
+    ; mov edx, newline_len
+    ; call print
     ret
 
 exit_with_error:

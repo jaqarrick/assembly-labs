@@ -53,7 +53,6 @@ spawn_thread:
     jnz parent_process  ; If eax != 0, it's the parent process
     ; Child thread continues here
     call child_process
-    jmp exit
 
 parent_process:
     ret
